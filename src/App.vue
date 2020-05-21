@@ -16,6 +16,9 @@
       </span>
     </div>
 
+    <!-- Loading text -->
+    <p v-if="loading">...Loading</p>
+
     <!-- Task table -->
     <div class="taskTable">
       <table>
@@ -43,28 +46,37 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex';
+
 export default {
   name: 'App',
   data() {
     return {
       newTask: '',
-      tasks: [],
     };
   },
+  computed: {
+    ...mapState({
+      loading: (state) => state.loading,
+      tasks: (state) => state.tasks,
+    }),
+  },
   methods: {
+    ...mapActions([
+      'createNewTasks',
+      'deleteTaskById',
+    ]),
     onCreateNewTask() {
-      this.tasks = [
-        {
-          id: new Date().getTime(),
-          name: this.newTask,
-          done: false,
-        },
-        ...this.tasks,
-      ];
+      const newTask = {
+        id: new Date().getTime(),
+        name: this.newTask,
+        done: false,
+      };
       this.newTask = '';
+      this.createNewTasks(newTask);
     },
     onDeleteTask(id) {
-      this.tasks = this.tasks.filter((task) => task.id !== id);
+      this.deleteTaskById(id);
     },
   },
 };
